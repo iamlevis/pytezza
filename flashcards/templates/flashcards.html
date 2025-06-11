@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>{{ set_name }} Flashcards</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; }
+    #card { border: 1px solid #ccc; padding: 20px; width: 300px; text-align: center; margin-bottom: 20px; }
+    button { padding: 10px 20px; }
+  </style>
+</head>
+<body>
+  <h1>{{ set_name }} Flashcards</h1>
+  <div id="card"></div>
+  <button id="show-answer">Show Answer</button>
+  <button id="next-card" disabled>Next</button>
+
+  <script>
+    const cards = {{ cards|tojson }};
+    let index = 0;
+    const cardDiv = document.getElementById('card');
+    const showBtn = document.getElementById('show-answer');
+    const nextBtn = document.getElementById('next-card');
+
+    function showQuestion() {
+      const card = cards[index];
+      cardDiv.textContent = card.question;
+      showBtn.disabled = false;
+      nextBtn.disabled = true;
+    }
+
+    function showAnswer() {
+      const card = cards[index];
+      cardDiv.textContent = card.answer;
+      showBtn.disabled = true;
+      nextBtn.disabled = false;
+    }
+
+    function nextCard() {
+      index = (index + 1) % cards.length;
+      showQuestion();
+    }
+
+    showBtn.addEventListener('click', showAnswer);
+    nextBtn.addEventListener('click', nextCard);
+
+    showQuestion();
+  </script>
+</body>
+</html>
