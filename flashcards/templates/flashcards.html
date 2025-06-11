@@ -7,26 +7,79 @@
     body { font-family: Arial, sans-serif; padding: 20px; }
     #card { border: 1px solid #ccc; padding: 20px; width: 300px; text-align: center; margin-bottom: 20px; }
     button { padding: 10px 20px; }
+    #map-container { margin-top: 30px; }
+    #us-map path { fill: #eee; stroke: #999; }
   </style>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <script src="https://unpkg.com/topojson-client@3"></script>
 </head>
 <body>
   <h1>{{ set_name }} Flashcards</h1>
   <div id="card"></div>
   <button id="show-answer">Show Answer</button>
   <button id="next-card" disabled>Next</button>
+  <div id="map-container">
+    <svg id="us-map" width="960" height="600"></svg>
+  </div>
 
   <script>
     const cards = {{ cards|tojson }};
+    cards.sort(() => Math.random() - 0.5);
     let index = 0;
     const cardDiv = document.getElementById('card');
     const showBtn = document.getElementById('show-answer');
     const nextBtn = document.getElementById('next-card');
+    const svgMap = d3.select('#us-map');
+    const stateToFips = {
+      "Alabama": "01", "Alaska": "02", "Arizona": "04", "Arkansas": "05",
+      "California": "06", "Colorado": "08", "Connecticut": "09",
+      "Delaware": "10", "Florida": "12", "Georgia": "13", "Hawaii": "15",
+      "Idaho": "16", "Illinois": "17", "Indiana": "18", "Iowa": "19",
+      "Kansas": "20", "Kentucky": "21", "Louisiana": "22", "Maine": "23",
+      "Maryland": "24", "Massachusetts": "25", "Michigan": "26",
+      "Minnesota": "27", "Mississippi": "28", "Missouri": "29",
+      "Montana": "30", "Nebraska": "31", "Nevada": "32",
+      "New Hampshire": "33", "New Jersey": "34", "New Mexico": "35",
+      "New York": "36", "North Carolina": "37", "North Dakota": "38",
+      "Ohio": "39", "Oklahoma": "40", "Oregon": "41", "Pennsylvania": "42",
+      "Rhode Island": "44", "South Carolina": "45", "South Dakota": "46",
+      "Tennessee": "47", "Texas": "48", "Utah": "49", "Vermont": "50",
+      "Virginia": "51", "Washington": "53", "West Virginia": "54",
+      "Wisconsin": "55", "Wyoming": "56"
+    };
+
+    const width = 960;
+    const height = 600;
+    const projection = d3.geoAlbersUsa().scale(1000).translate([width / 2, height / 2]);
+    const path = d3.geoPath(projection);
+
+    d3.json('https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json').then(us => {
+      svgMap.attr('width', width).attr('height', height);
+      const states = topojson.feature(us, us.objects.states).features;
+      svgMap.append('g')
+        .selectAll('path')
+        .data(states)
+        .enter().append('path')
+        .attr('d', path)
+        .attr('id', d => `state-${d.id}`);
+      highlightState();
+    });
+
+    function highlightState() {
+      const card = cards[index];
+      const fips = stateToFips[card.question];
+      svgMap.selectAll('path').attr('fill', '#eee');
+      if (fips) {
+        svgMap.select(`#state-${fips}`).attr('fill', 'yellow');
+      }
+    }
 
     function showQuestion() {
       const card = cards[index];
       cardDiv.textContent = card.question;
       showBtn.disabled = false;
       nextBtn.disabled = true;
+      highlightState();
     }
 
     function showAnswer() {

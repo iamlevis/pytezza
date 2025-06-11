@@ -8,6 +8,8 @@ suitable for elementary school students.
 - Choose from available flashcard sets on the home page.
 - A preloaded set of U.S. states and capitals.
 - Add new sets by dropping a JSON file into the `data` directory.
+- Flashcards are shown in random order each time you view a set.
+- The states set includes an interactive U.S. map that highlights the state for each question.
 
 ## Running
 
@@ -20,6 +22,9 @@ suitable for elementary school students.
    python app.py
    ```
 3. Open `http://localhost:5000` in your browser.
+
+The map visualization uses D3 and the public `us-atlas` dataset which are
+loaded from a CDN, so internet access is required for the map to appear.
 
 ## Adding New Flashcard Sets
 

@@ -1,5 +1,6 @@
 from flask import Flask, render_template, abort
 import json
+import random
 from pathlib import Path
 
 app = Flask(__name__)
@@ -30,6 +31,7 @@ def flashcards_view(set_name):
     cards = load_set(set_name)
     if cards is None:
         abort(404)
+    random.shuffle(cards)
     return render_template('flashcards.html', set_name=set_name, cards=cards)
 
 
