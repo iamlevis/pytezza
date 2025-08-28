@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Flashcards</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; }
+    .set-list { list-style: none; padding: 0; }
+    .set-list li { margin-bottom: 10px; }
+  </style>
+</head>
+<body>
+  <h1>Select a Flashcard Set</h1>
+  <ul class="set-list">
+    {% for set in sets %}
+    <li><a href="/flashcards/{{ set }}">{{ set }}</a></li>
+    {% endfor %}
+  </ul>
+</body>
+</html>
